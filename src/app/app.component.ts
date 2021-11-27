@@ -27,6 +27,7 @@ export class AppComponent implements OnInit {
 	async search() {
 		try {
 			await this.wax.changeAccount(this.account)
+			console.log("TTTTTTTTTTTT")
 			await this.router.navigate([this.account]);
 		} catch (e) {
 			// account not found

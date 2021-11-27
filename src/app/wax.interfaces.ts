@@ -16,7 +16,11 @@ export interface Account {
 	rex_info: null
 	subjective_cpu_bill_limit: AccountLimit
 	calculated: {
-		combinedBaseBalance: number
+		balances: {
+			name: string
+			amount: number
+			wax: number
+		}[]
 	}
 }
 
@@ -26,10 +30,54 @@ export interface AccountLimit {
 	max: number
 }
 
-export interface AccountLight {
+export interface LightAccount {
 	delegated_to: {
 		account_name: string
 		cpu_weight: number
 		net_weight: number
 	}[]
 }
+
+export interface LightBalances {
+	amount: string
+	contract: string
+	currency: string
+	decimals: string
+}
+
+export interface Symbol {
+	name: string
+	precision: number
+}
+
+export interface Token {
+	contract: string
+	symbol: Symbol
+	str: string
+}
+
+export interface Market {
+	id: number
+	base_token: Token
+	quote_token: Token
+	min_buy: string // like '0.0001 AETHER'
+	min_sell: string // like '0.0001 DUST'
+	frozen: number
+	fee: number
+	last_price: number
+	volume24: number
+	volumeWeek: number
+	volumeMonth: number
+	change24: number // %
+	changeWeek: number // %
+}
+
+export interface Order {
+	account: string
+	ask: string
+	bid: string
+	id: number
+	timestamp: number
+	unit_price: string // this is a Integer String
+}
+
