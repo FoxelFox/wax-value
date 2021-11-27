@@ -1,4 +1,5 @@
 import {Component} from "@angular/core";
+import {WaxService} from "../wax.service";
 
 @Component({
 	selector: 'overview',
@@ -6,4 +7,8 @@ import {Component} from "@angular/core";
 })
 export class OverviewComponent {
 
+	constructor(
+		public wax: WaxService
+	) {
+	}
 }

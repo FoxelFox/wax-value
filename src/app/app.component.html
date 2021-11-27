@@ -1,2 +1,17 @@
-TEST
-<router-outlet></router-outlet>
+<div class="app">
+	<div>
+		<mat-form-field fxFlex>
+			<mat-label>Address</mat-label>
+			<input matInput [(ngModel)]="account" (keydown.enter)="search()">
+			<button *ngIf="account" matSuffix mat-icon-button aria-label="Clear" (click)="account=''">
+				<mat-icon>close</mat-icon>
+			</button>
+		</mat-form-field>
+		<button mat-icon-button (click)="search()">
+			<mat-icon>search</mat-icon>
+		</button>
+	</div>
+
+	<router-outlet *ngIf="wax.account"></router-outlet>
+</div>
+
