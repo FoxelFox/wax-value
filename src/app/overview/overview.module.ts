@@ -3,6 +3,7 @@ import {OverviewComponent} from "./overview.component";
 import {RouterModule} from "@angular/router";
 import {CommonModule} from "@angular/common";
 import {FlexLayoutModule} from "@angular/flex-layout";
+import {MatProgressBarModule} from "@angular/material/progress-bar";
 
 @NgModule({
 	imports: [
@@ -10,7 +11,8 @@ import {FlexLayoutModule} from "@angular/flex-layout";
 			path: '', component: OverviewComponent
 		}]),
 		CommonModule,
-		FlexLayoutModule
+		FlexLayoutModule,
+		MatProgressBarModule
 	],
 	declarations: [
 		OverviewComponent

@@ -1,3 +1,8 @@
+
+<mat-progress-bar
+	style="margin-bottom: 8px; opacity: {{wax.progress === 100? 0: 1}}"
+	[mode]="wax.progress === undefined ? 'indeterminate' : 'determinate'" [value]="wax.progress"></mat-progress-bar>
+
 <div fxLayout="row" fxLayoutAlign="space-between center">
 	<h1>Total Value for {{wax.account.account_name}}</h1>
 	<h1>{{total}}</h1>
@@ -13,6 +18,19 @@
 	<div *ngFor="let token of wax.account.calculated.balances" fxLayout="row" fxLayoutAlign="space-between center">
 		<div>{{token.name}}</div>
 		<div>{{token.wax.toFixed(2)}}</div>
+	</div>
+</div>
+
+<h2 style="margin-top: 16px">{{wax.account.calculated.nfts.length}} NFT{{wax.account.calculated.nfts.length > 1?'s':''}}</h2>
+
+<div class="tokens">
+	<div class="table-header" fxLayout="row" fxLayoutAlign="space-between center">
+		<div>Name</div>
+		<div>Value (WAX)</div>
+	</div>
+	<div *ngFor="let nft of wax.account.calculated.nfts" fxLayout="row" fxLayoutAlign="space-between center">
+		<div>{{nft.name}}</div>
+		<div>{{nft.wax.toFixed(2)}}</div>
 	</div>
 </div>
 

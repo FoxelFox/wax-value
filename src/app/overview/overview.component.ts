@@ -26,6 +26,10 @@ export class OverviewComponent {
 		for(const token of this.wax.account.calculated.balances) {
 			total += token.wax;
 		}
+
+		for(const nft of this.wax.account.calculated.nfts) {
+			total += nft.wax;
+		}
 		return total.toFixed(2) + ' WAX'
 	}
 }

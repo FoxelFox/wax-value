@@ -21,6 +21,12 @@ export interface Account {
 			amount: number
 			wax: number
 		}[]
+		nfts: {
+			name: string
+			amount: number
+			wax: number
+			sales: NFTSale[]
+		}[]
 	}
 }
 
@@ -81,3 +87,77 @@ export interface Order {
 	unit_price: string // this is a Integer String
 }
 
+export interface NFT {
+	asset_id: "1099584685824"
+	auctions: []
+	backed_tokens: []
+	burned_at_block: null
+	burned_at_time: null
+	burned_by_account: null
+	collection: {
+		allow_notify: true
+		author: "fd3u.wam"
+		authorized_accounts: string[]
+		collection_name: "zombiecoinzz"
+		created_at_block: "119211485"
+		created_at_time: "1621047160000"
+		img: "QmNtdQfuwRGKnnD2bmn5GxQ3AkTrjpVmzLYuoJzjFfdAAA"
+		market_fee: 0.05
+		name: "Zombiecoin"
+		notify_accounts: []
+	}
+	contract: "atomicassets"
+	data: {
+		img: "QmcK43DuXvCwHQi9R1hi3maRdAjyzCpYWYkwthbjRAxPrm"
+		"link to exchange": "https://www.zombiecoin.io/exchangeshop"
+		name: "Wood (8)"
+		quantity: "8"
+	}
+	immutable_data: {}
+	is_burnable: true
+	is_transferable: true
+	minted_at_block: "153139310"
+	minted_at_time: "1638023851500"
+	mutable_data: {}
+	name: "Wood (8)"
+	owner: "dknra.wam"
+	prices: {
+		average: "228052464"
+		market_contract: "atomicmarket"
+		max: "2000000000"
+		median: "180000000"
+		min: "8000000"
+		sales: "1201"
+		suggested_average: "60720000"
+		suggested_median: "59400000"
+		token: {
+			token_contract: "eosio.token"
+			token_precision: 8
+			token_symbol: "WAX"
+		}
+	}[]
+	sales: []
+	schema: { schema_name: string }
+	template: {
+		template_id: "243527",
+		max_supply: "0",
+		is_transferable: true,
+		is_burnable: true
+		// and more ...
+	}
+	template_mint: "19308"
+	transferred_at_block: "153139310"
+	transferred_at_time: "1638023851500"
+	updated_at_block: "153139310"
+	updated_at_time: "1638023851500"
+}
+
+export interface NFTSale {
+	average: "2336134"
+	median: "1230000"
+	sales: "438"
+	time: 1638014400000
+	token_contract: "eosio.token"
+	token_precision: 8
+	token_symbol: "WAX"
+}
