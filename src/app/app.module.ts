@@ -11,6 +11,7 @@ import {MatIconModule} from "@angular/material/icon";
 import {FlexLayoutModule} from "@angular/flex-layout";
 import {WaxService} from "./wax.service";
 import {HttpClientModule} from "@angular/common/http";
+import {MatToolbarModule} from "@angular/material/toolbar";
 
 @NgModule({
 	declarations: [
@@ -26,7 +27,8 @@ import {HttpClientModule} from "@angular/common/http";
 		MatButtonModule,
 		MatIconModule,
 		FlexLayoutModule,
-		HttpClientModule
+		HttpClientModule,
+		MatToolbarModule
 	],
 	providers: [WaxService],
 	bootstrap: [AppComponent]

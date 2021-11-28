@@ -3,9 +3,15 @@ import {Injectable} from "@angular/core";
 import {lastValueFrom} from "rxjs";
 import {Account, LightAccount, LightBalances, Market, NFT, NFTSale, Order} from "./wax.interfaces";
 
+export interface PricePoint {
+	time: Date
+	price: number
+}
+
 @Injectable()
 export class WaxService {
 
+	tokenPricesCache: {[key: string]: PricePoint[]} = {};
 	account?: Account
 	markets?: Market[];
 	balances?: LightBalances[]
@@ -153,5 +159,31 @@ export class WaxService {
 		const url = `api/chain/get_table_rows`;
 		const resBuy = await lastValueFrom(this.http.post<{rows: Order[]}>(url, payload));
 		return resBuy.rows[0] ? parseInt(resBuy.rows[0].unit_price) / Math.pow(10, market.base_token.symbol.precision) : 0;
+	}
+
+	async getTokenPriceHistory(token: string): Promise<PricePoint[]> {
+		if (this.tokenPricesCache[token]) {
+			return this.tokenPricesCache[token];
+		}
+
+		const market = this.marketsByQuoteNameContract[token];
+		const prices = [];
+		if (market) {
+			const res = await lastValueFrom(this.http.get<{
+				time: string
+				open: number
+				close: number
+			}[]>(`https://wax.alcor.exchange/api/markets/${market.id}/charts?resolution=1D`));
+			for (const point of res) {
+				prices.push({
+					time: new Date(point.time),
+					price: (point.open + point.close) / 2
+				})
+			}
+		}
+
+		this.tokenPricesCache[token] = prices;
+
+		return prices;
 	}
 }
