@@ -11,7 +11,7 @@ export class HistoryService {
 	actions: Transaction[] = [];
 
 	trades: CSVRecord[];
-	fullHistory: CSVRecord[] = [];
+	history: CSVRecord[] = [];
 	done = false;
 
 	valuePerDay: {[key: string]: {
@@ -28,7 +28,6 @@ export class HistoryService {
 
 	async fetchHistory() {
 		this.trades = await this.alcor.getTrades();
-		this.fullHistory.push(...this.trades);
 		const iterator = this.getTransactions();
 		let transactions: Transaction[];
 
@@ -62,11 +61,11 @@ export class HistoryService {
 
 					// if (change > 20 || change < -20) {
 					// 	result['debug'] = t.account_action_seq
-					this.fullHistory.push(result);
+					this.history.push(result);
 					//}
 				}
 			}
-			this.fullHistory = this.fullHistory.sort((a, b) => a.date.localeCompare(b.date))
+			//this.history = this.history.sort((a, b) => a.date.localeCompare(b.date))
 		}
 		this.done = true;
 	}
