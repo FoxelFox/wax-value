@@ -1,7 +1,7 @@
 import {HttpClient} from "@angular/common/http";
 import {Injectable} from "@angular/core";
 import {lastValueFrom} from "rxjs";
-import {Account, LightAccount, LightBalances, Market, NFT, NFTSale, Order} from "./wax.interfaces";
+import {Account, LightAccount, LightBalances, Market, NFT, NFTSale, Order, Transaction} from "./interfaces";
 
 export interface PricePoint {
 	time: Date

@@ -1,1 +1,14 @@
-History
+<mat-progress-bar
+	style="margin-bottom: 8px; opacity: {{history.done ? 0: 1}}"
+	mode="indeterminate"
+></mat-progress-bar>
+
+<div>
+	<h1 style="margin: 0 8px">{{history.fullHistory.length}} Transactions</h1>
+</div>
+
+
+<button mat-button [disabled]="!history.done" (click)="download()">
+	<mat-icon>download</mat-icon>
+	CSV
+</button>

@@ -12,6 +12,7 @@ import {FlexLayoutModule} from "@angular/flex-layout";
 import {WaxService} from "./wax.service";
 import {HttpClientModule} from "@angular/common/http";
 import {MatToolbarModule} from "@angular/material/toolbar";
+import {AlcorService} from "./alcor-trades.service";
 
 @NgModule({
 	declarations: [
@@ -30,7 +31,10 @@ import {MatToolbarModule} from "@angular/material/toolbar";
 		HttpClientModule,
 		MatToolbarModule
 	],
-	providers: [WaxService],
+	providers: [
+		WaxService,
+		AlcorService
+	],
 	bootstrap: [AppComponent]
 })
 export class AppModule {

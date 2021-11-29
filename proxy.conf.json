@@ -25,7 +25,15 @@
 			"^/atomicassets": ""
 		}
 
-	}
+	},
+	"/alcor": {
+		"target": "https://wax.alcor.exchange/api",
+		"secure": true,
+		"changeOrigin": true,
+		"pathRewrite": {
+			"^/alcor": ""
+		}
 
+	}
 
 }
