@@ -24,7 +24,7 @@ interface ValuePerDay {
 	[key: string]: Value
 }
 
-const DAY = 1000 * 60 * 60 * 24;
+const STEP = 1000 * 60 * 60;
 
 @Component({
 	selector: 'history',
@@ -46,10 +46,12 @@ export class HistoryComponent implements OnInit {
 		type: 'line',
 		data: this.data,
 		options: {
-
+			animation: {
+				duration: 0
+			},
 			elements: {
 				line: {
-					borderWidth: 1.0
+					borderWidth: 2.0
 				},
 				point: {
 					radius: 0
@@ -90,9 +92,9 @@ export class HistoryComponent implements OnInit {
 			for (const result of results) {
 
 				const date = new Date(result.date.getTime())
-				date.setHours(12, 0, 0, 0);
+				date.setMinutes(0, 0, 0);
 				let newDay = date.getTime();
-				
+
 				if (day !== newDay) {
 					// copy value from last day
 					if (day) {
@@ -100,9 +102,9 @@ export class HistoryComponent implements OnInit {
 
 						// calculate worth between days with no transactions
 						let i = 0;
-						for (let d = day + DAY; d < newDay - DAY; d += DAY) {
+						for (let d = day + STEP; d < newDay - STEP; d += STEP) {
 							this.valuePerDay[d] = JSON.parse(JSON.stringify(this.valuePerDay[day]));
-							this.valuePerDay[d].date = new Date(bucket.date.getTime() + (++i) * 1000 * 60 * 60 * 24);
+							this.valuePerDay[d].date = new Date(bucket.date.getTime() + (++i) * STEP);
 							await this.calculateWorth(this.valuePerDay[d]);
 						}
 
@@ -119,7 +121,7 @@ export class HistoryComponent implements OnInit {
 					}
 					bucket = this.valuePerDay[newDay]
 					bucket.date = result.date
-					bucket.date.setHours(12, 0, 0, 0);
+					bucket.date.setMinutes(0, 0, 0);
 					day = newDay;
 				}
 
@@ -219,7 +221,7 @@ export class HistoryComponent implements OnInit {
 				// ignore
 			} else {
 				const history = await this.wax.getTokenPriceHistory(token);
-				const tokenPriceOnDay = history.find(h => h.time.getTime() >= (bucket.date.getTime() - DAY))
+				const tokenPriceOnDay = history.find(h => h.time.getTime() >= (bucket.date.getTime() - STEP))
 				if (tokenPriceOnDay) {
 					if (tokenPriceOnDay.price > 1000) {
 						console.log(tokenPriceOnDay)
