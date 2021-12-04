@@ -1,7 +1,7 @@
 import {HttpClient} from "@angular/common/http";
 import {Injectable} from "@angular/core";
 import {lastValueFrom} from "rxjs";
-import {Account, LightAccount, LightBalances, Market, NFT, NFTSale, Order, Transaction} from "./interfaces";
+import {Account, LightAccount, LightBalances, Market, NFT, NFTSale, Order} from "./interfaces";
 
 export interface PricePoint {
 	time: Date
@@ -11,12 +11,12 @@ export interface PricePoint {
 @Injectable()
 export class WaxService {
 
-	tokenPricesCache: {[key: string]: PricePoint[]} = {};
+	tokenPricesCache: { [key: string]: PricePoint[] } = {};
 	account?: Account
 	markets?: Market[];
 	balances?: LightBalances[]
 	nfts?: NFT[];
-	marketsByQuoteNameContract: {[key: string]: Market} = {}; // TOKEN@Contract
+	marketsByQuoteNameContract: { [key: string]: Market } = {}; // TOKEN@Contract
 	progress?: number
 	progressIndex = 0
 
@@ -64,7 +64,7 @@ export class WaxService {
 			name: "WAX"
 		});
 
-		const data = await lastValueFrom(this.http.get<{balances: LightBalances[]}>(`light/balances/wax/${account}`));
+		const data = await lastValueFrom(this.http.get<{ balances: LightBalances[] }>(`light/balances/wax/${account}`));
 		this.balances = data.balances.filter(b =>
 			parseFloat(b.amount) > 0 && b.currency !== "WAX"
 		);
@@ -88,13 +88,13 @@ export class WaxService {
 					this.account.calculated.balances.push({
 						amount: amount,
 						name: balance.currency,
-						wax:  amount * bid
+						wax: amount * bid
 					})
 				} else {
 					this.account.calculated.balances.push({
 						amount: amount,
 						name: balance.currency,
-						wax:  0
+						wax: 0
 					})
 				}
 				this.updateProgress();
@@ -108,14 +108,14 @@ export class WaxService {
 	}
 
 	async loadNFTs() {
-		const res = await lastValueFrom(this.http.get<{data: NFT[]}>(`atomicassets/assets?owner=${this.account.account_name}`));
+		const res = await lastValueFrom(this.http.get<{ data: NFT[] }>(`atomicassets/assets?owner=${this.account.account_name}`));
 
 		this.nfts = res.data
-		for (const nft of  this.nfts) {
+		for (const nft of this.nfts) {
 
 			await new Promise(resolve => setTimeout(resolve, 1000));
 
-			const sales = await lastValueFrom(this.http.get<{data: NFTSale[]}>(
+			const sales = await lastValueFrom(this.http.get<{ data: NFTSale[] }>(
 				`atomicassets/prices/sales/days?collection_name=${nft.collection.collection_name}&schema_name=${nft.schema.schema_name}&symbol=WAX&template_id=${nft.template.template_id}`
 			));
 
@@ -157,7 +157,7 @@ export class WaxService {
 		};
 
 		const url = `api/chain/get_table_rows`;
-		const resBuy = await lastValueFrom(this.http.post<{rows: Order[]}>(url, payload));
+		const resBuy = await lastValueFrom(this.http.post<{ rows: Order[] }>(url, payload));
 		return resBuy.rows[0] ? parseInt(resBuy.rows[0].unit_price) / Math.pow(10, market.base_token.symbol.precision) : 0;
 	}
 
@@ -173,6 +173,7 @@ export class WaxService {
 				time: string
 				open: number
 				close: number
+				low: number
 			}[]>(`https://wax.alcor.exchange/api/markets/${market.id}/charts?resolution=1D`));
 			for (const point of res) {
 				prices.push({

@@ -1,14 +1,21 @@
 <mat-progress-bar
-	style="margin-bottom: 8px; opacity: {{history.done ? 0: 1}}"
 	mode="indeterminate"
+	style="margin-bottom: 8px; opacity: {{history.done ? 0: 1}}"
 ></mat-progress-bar>
 
 <div>
-	<h1 style="margin: 0 8px">{{history.actions.length}} Transactions fetched until {{formatDate(history.history[history.history.length -1].date)}}</h1>
+	<h1
+		*ngIf="history.history.length"
+		style="margin: 0 8px"
+	>
+		{{history.actions.length}} Transactions fetched until
+		{{formatDate(history.history[history.history.length - 1].date)}}
+	</h1>
+	<canvas id="performance"></canvas>
 </div>
 
 
-<button mat-button [disabled]="!history.done" (click)="download()">
+<button (click)="download()" [disabled]="!history.done" mat-button>
 	<mat-icon>download</mat-icon>
 	CSV
 </button>

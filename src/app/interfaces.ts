@@ -12,7 +12,11 @@ export interface Account {
 	net_limit: AccountLimit
 	cpu_limit: AccountLimit
 	ram_usage: number,
-	permissions:[{"perm_name":"active","parent":"owner","required_auth":{"threshold":2,"keys":[{"key":"EOS8MBSjMt6szU4JzVcbBpDKkhhsiPr1MPd3BTyKupozGdvCnYMBM","weight":1}],"accounts":[{"permission":{"actor":"managed.wax","permission":"cosign"},"weight":1}],"waits":[]}},{"perm_name":"owner","parent":"","required_auth":{"threshold":1,"keys":[],"accounts":[{"permission":{"actor":"managed.wax","permission":"active"},"weight":1}],"waits":[]}}],"total_resources":{"owner":"dknra.wam","net_weight":"21.15746980 WAX","cpu_weight":"5755.10800674 WAX","ram_bytes":324219},"self_delegated_bandwidth":{"from":"dknra.wam","to":"dknra.wam","net_weight":"21.15746980 WAX","cpu_weight":"5755.10800674 WAX"},"refund_request":null,"voter_info":{"owner":"dknra.wam","proxy":"bloksioproxy","producers":[],"staked":"647626547654","unpaid_voteshare":"67412323176531656107049475268759611171143680.00000000000000000","unpaid_voteshare_last_updated":"2021-11-26T21:52:56.000","unpaid_voteshare_change_rate":"180157337358676443578814433061790285824.00000000000000000","last_claim_time":"2021-11-22T12:18:33.000","last_vote_weight":"180157337358676443578814433061790285824.00000000000000000","proxied_vote_weight":"0.00000000000000000","is_proxy":0,"flags1":0,"reserved2":0,"reserved3":"0 "},
+	permissions: [{ "perm_name": "active", "parent": "owner", "required_auth": { "threshold": 2, "keys": [{ "key": "EOS8MBSjMt6szU4JzVcbBpDKkhhsiPr1MPd3BTyKupozGdvCnYMBM", "weight": 1 }], "accounts": [{ "permission": { "actor": "managed.wax", "permission": "cosign" }, "weight": 1 }], "waits": [] } }, { "perm_name": "owner", "parent": "", "required_auth": { "threshold": 1, "keys": [], "accounts": [{ "permission": { "actor": "managed.wax", "permission": "active" }, "weight": 1 }], "waits": [] } }],
+	"total_resources": { "owner": "dknra.wam", "net_weight": "21.15746980 WAX", "cpu_weight": "5755.10800674 WAX", "ram_bytes": 324219 },
+	"self_delegated_bandwidth": { "from": "dknra.wam", "to": "dknra.wam", "net_weight": "21.15746980 WAX", "cpu_weight": "5755.10800674 WAX" },
+	"refund_request": null,
+	"voter_info": { "owner": "dknra.wam", "proxy": "bloksioproxy", "producers": [], "staked": "647626547654", "unpaid_voteshare": "67412323176531656107049475268759611171143680.00000000000000000", "unpaid_voteshare_last_updated": "2021-11-26T21:52:56.000", "unpaid_voteshare_change_rate": "180157337358676443578814433061790285824.00000000000000000", "last_claim_time": "2021-11-22T12:18:33.000", "last_vote_weight": "180157337358676443578814433061790285824.00000000000000000", "proxied_vote_weight": "0.00000000000000000", "is_proxy": 0, "flags1": 0, "reserved2": 0, "reserved3": "0 " },
 	rex_info: null
 	subjective_cpu_bill_limit: AccountLimit
 	calculated: {
@@ -225,15 +229,15 @@ export interface AlcorTrade {
 
 export interface CSVRecord {
 	type: "Einnahme" | "Ausgabe" | "Einzahlung" | "Auszahlung" | "Zinsen" | "Trade"
-	buy_amount?: string
+	buy_amount?: number
 	buy_currency?: string
-	sell_amount?: string
+	sell_amount?: number
 	sell_currency?: string
 	fee?: string
 	fee_currency?: string
 	exchange?: string
 	trade_group?: string
 	comment?: string
-	date: string
+	date: Date
 }
 

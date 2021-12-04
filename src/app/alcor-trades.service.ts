@@ -7,7 +7,7 @@ import {lastValueFrom} from "rxjs";
 @Injectable()
 export class AlcorService {
 
-	markets: {[id: number]: Market} = {};
+	markets: { [id: number]: Market } = {};
 	trades: AlcorTrade[];
 
 	constructor(
@@ -27,7 +27,7 @@ export class AlcorService {
 		for (const trade of this.trades) {
 			const line: CSVRecord = {
 				type: "Trade",
-				date: trade.time,
+				date: new Date(trade.time),
 				exchange: "WAX Transaction"
 			}
 			// buy match = bid (in/buy, base) ask (out/sell, quote)
@@ -35,8 +35,8 @@ export class AlcorService {
 
 			const base = this.getTokenIdentifier(this.markets[trade.market].base_token);
 			const quote = this.getTokenIdentifier(this.markets[trade.market].quote_token);
-			const bid = trade.bid.toString();
-			const ask = trade.ask.toString();
+			const bid = trade.bid;
+			const ask = trade.ask;
 
 			if (trade.type === "buymatch") {
 				line.buy_currency = base;
@@ -44,7 +44,7 @@ export class AlcorService {
 				line.sell_currency = quote;
 				line.sell_amount = ask;
 			} else {
-				line.buy_currency =  quote;
+				line.buy_currency = quote;
 				line.buy_amount = bid;
 				line.sell_currency = base;
 				line.sell_amount = ask;
@@ -82,7 +82,7 @@ export class AlcorService {
 				},
 				"str": "WAX@eosio.token"
 			},
-			quote_token:  {
+			quote_token: {
 				"contract": "pornhubgames",
 				"symbol": {
 					"name": "PORN",
@@ -102,7 +102,7 @@ export class AlcorService {
 				},
 				"str": "WAX@eosio.token"
 			},
-			quote_token:  {
+			quote_token: {
 				"contract": "createtokens",
 				"symbol": {
 					"name": "WEED",
@@ -114,6 +114,7 @@ export class AlcorService {
 	}
 
 	getTokenIdentifier(token: Token) {
+		/*
 		if (token.str === "WAX@eosio.token") {
 			// well known and listed Token WAX (WAXP)
 			return "WAX";
@@ -124,5 +125,7 @@ export class AlcorService {
 			// in public its a unknown token and only available in the WAX Universe
 			return token.str;
 		}
+		 */
+		return token.str;
 	}
 }
