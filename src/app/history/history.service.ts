@@ -74,16 +74,21 @@ export class HistoryService {
 				let tradesInBlock = this.trades.filter(t => t.date.getTime() >= start && t.date.getTime() <= end && !this.history.find(x => x.date.getTime() === t.date.getTime()));
 				block.push(...tradesInBlock)
 				block.sort((a, b) => a.date.getTime() - b.date.getTime());
-
 				this.history.push(...block);
 
 				start = end;
 				yield block;
 			}
-
-
-			//this.history = this.history.sort((a, b) => a.date.localeCompare(b.date))
 		}
+
+		let lastTrades = this.trades.filter(t => t.date.getTime() >= start && !this.history.find(x => x.date.getTime() === t.date.getTime()));
+		lastTrades.sort((a, b) => a.date.getTime() - b.date.getTime());
+		if (lastTrades.length) {
+			this.history.push(...lastTrades);
+
+			yield lastTrades;
+		}
+
 		this.done = true;
 	}
 

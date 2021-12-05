@@ -1,25 +1,25 @@
 <div class="app">
 	<div>
 
-		<mat-toolbar style="position: fixed;" >
+		<mat-toolbar style="position: fixed;">
 
 			<ng-container *ngIf="wax.account">
 
-				<a mat-button [routerLink]="wax.account.account_name">Overview</a>
-				<a mat-button [routerLink]="wax.account.account_name + '/history'">History</a>
+				<a [routerLink]="wax.account.account_name" mat-button>Overview</a>
+				<!--				<a mat-button [routerLink]="wax.account.account_name + '/history'">History</a>-->
 				<div fxFlex></div>
 				{{wax.account.account_name}}
 			</ng-container>
 
 			<ng-container *ngIf="!wax.account">
-				<mat-form-field fxFlex style="font-size: 14px" *ngIf="!wax.account">
+				<mat-form-field *ngIf="!wax.account" fxFlex style="font-size: 14px">
 					<mat-label>Address</mat-label>
-					<input matInput [(ngModel)]="account" (keydown.enter)="search()">
-					<button *ngIf="account" matSuffix mat-icon-button aria-label="Clear" (click)="account=''">
+					<input (keydown.enter)="search()" [(ngModel)]="account" matInput>
+					<button (click)="account=''" *ngIf="account" aria-label="Clear" mat-icon-button matSuffix>
 						<mat-icon>close</mat-icon>
 					</button>
 				</mat-form-field>
-				<button mat-icon-button (click)="search()">
+				<button (click)="search()" mat-icon-button>
 					<mat-icon>search</mat-icon>
 				</button>
 			</ng-container>

@@ -24,7 +24,7 @@ interface ValuePerDay {
 	[key: string]: Value
 }
 
-const STEP = 1000 * 60 * 60;
+const STEP = 1000 * 60 * 60 * 12;
 
 @Component({
 	selector: 'history',
@@ -70,6 +70,11 @@ export class HistoryComponent implements OnInit {
 	};
 
 	valuePerDay: ValuePerDay = {};
+	lastTokenValues: {
+		name: string
+		value: number
+		amount: number
+	}[] = [];
 
 	constructor(
 		public history: HistoryService,
@@ -152,6 +157,22 @@ export class HistoryComponent implements OnInit {
 		bucket.tokens[result.sell_currency] = bucket.tokens[result.sell_currency] ? bucket.tokens[result.sell_currency] - result.sell_amount : result.sell_amount;
 	}
 
+	/**
+	 * Converts known tokens to there commonly used designation.
+	 * This is required for CoinTracking
+	 * @param token
+	 */
+	convertCurrency(token: string) {
+		switch (token) {
+			case "WAX@eosio.token":
+				return "WAXP";
+			case "TLM@alien.worlds":
+				return "TLM";
+			default:
+				return token
+		}
+	}
+
 	download() {
 		// map WAX to WAXP
 		const full = this.history.history.concat(this.history.trades);
@@ -161,9 +182,9 @@ export class HistoryComponent implements OnInit {
 			copy.push({
 				type: line.type,
 				buy_amount: line.buy_amount,
-				buy_currency: line.buy_currency === "WAX" ? "WAXP" : line.buy_currency,
+				buy_currency: this.convertCurrency(line.buy_currency),
 				sell_amount: line.sell_amount,
-				sell_currency: line.sell_currency === "WAX" ? "WAXP" : line.sell_currency,
+				sell_currency: this.convertCurrency(line.sell_currency),
 				fee: line.fee,
 				fee_currency: line.fee_currency,
 				exchange: line.exchange,
@@ -217,6 +238,7 @@ export class HistoryComponent implements OnInit {
 		for (const token in bucket.tokens) {
 			if (token === "WAX@eosio.token") {
 				worth += bucket.tokens[token]
+				this.updateLastTokenValue(token, bucket.tokens[token], bucket.tokens[token]);
 			} else if (token === "WEED@createtokens") {
 				// ignore
 			} else {
@@ -226,7 +248,10 @@ export class HistoryComponent implements OnInit {
 					if (tokenPriceOnDay.price > 1000) {
 						console.log(tokenPriceOnDay)
 					}
-					worth += tokenPriceOnDay.price * bucket.tokens[token]
+					const tokenWorth = tokenPriceOnDay.price * bucket.tokens[token];
+					worth += tokenWorth;
+
+					this.updateLastTokenValue(token, tokenWorth, bucket.tokens[token]);
 				} else {
 					console.log("No price found")
 				}
@@ -237,13 +262,7 @@ export class HistoryComponent implements OnInit {
 		bucket.worth.wax = worth
 		// TODO USD Price
 
-		if (bucket.worth.wax >= 10000) {
-			console.log(bucket)
-		}
-
-		if (bucket.worth.wax < 0) {
-			console.log(bucket)
-		}
+		this.lastTokenValues.sort((a, b) => b.value - a.value);
 
 		this.chart.data.datasets[0].data.push({
 			x: bucket.date.getTime(),
@@ -252,4 +271,14 @@ export class HistoryComponent implements OnInit {
 		this.chart.update();
 	}
 
+	updateLastTokenValue(token: string, value: number, amount: number) {
+		let entry = this.lastTokenValues.find(t => t.name == token);
+		if (!entry) {
+			entry = {name: token, value, amount}
+			this.lastTokenValues.push(entry);
+		} else {
+			entry.amount
+			entry.value = value;
+		}
+	}
 }
