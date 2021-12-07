@@ -6,6 +6,7 @@ import {MatIconModule} from "@angular/material/icon";
 import {HistoryService} from "./history.service";
 import {MatProgressBarModule} from "@angular/material/progress-bar";
 import {CommonModule} from "@angular/common";
+import {FlexLayoutModule} from "@angular/flex-layout";
 
 @NgModule({
 	imports: [
@@ -15,7 +16,8 @@ import {CommonModule} from "@angular/common";
 		MatButtonModule,
 		MatIconModule,
 		MatProgressBarModule,
-		CommonModule
+		CommonModule,
+		FlexLayoutModule
 	],
 	declarations: [
 		HistoryComponent
