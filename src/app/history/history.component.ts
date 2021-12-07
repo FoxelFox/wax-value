@@ -46,6 +46,7 @@ export class HistoryComponent implements OnInit {
 		type: 'line',
 		data: this.data,
 		options: {
+			maintainAspectRatio: false,
 			animation: {
 				duration: 0
 			},
