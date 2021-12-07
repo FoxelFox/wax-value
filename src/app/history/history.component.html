@@ -18,11 +18,14 @@
 		<div style="text-align: right">Amount</div>
 		<div style="text-align: right">Value</div>
 	</div>
-	<div *ngFor="let token of lastTokenValues" [style.order]="token.value * 1000" class="tokens">
-		<div>{{token.name}}</div>
-		<div style="text-align: right">{{token.amount.toFixed(3)}}</div>
-		<div style="text-align: right">{{token.value.toFixed(3) + ' WAX'}}</div>
-	</div>
+	<ng-container *ngFor="let token of lastTokenValues" [style.order]="token.value * 1000">
+		<div *ngIf="token.amount > 0.001" class="tokens">
+			<div>{{token.name}}</div>
+			<div style="text-align: right">{{token.amount.toFixed(3)}}</div>
+			<div style="text-align: right">{{token.value.toFixed(3) + ' WAX'}}</div>
+		</div>
+	</ng-container>
+
 </div>
 
 <button (click)="download()" [disabled]="!history.done" mat-button>

@@ -155,6 +155,12 @@ export class HistoryComponent implements OnInit {
 
 	out(bucket: Value, result: CSVRecord) {
 		bucket.tokens[result.sell_currency] = bucket.tokens[result.sell_currency] ? bucket.tokens[result.sell_currency] - result.sell_amount : result.sell_amount;
+		if (bucket.tokens[result.sell_currency] < 0) {
+			console.log(bucket)
+			console.log(this.valuePerDay)
+			console.log(this.history.history)
+			debugger;
+		}
 	}
 
 	/**
@@ -243,17 +249,15 @@ export class HistoryComponent implements OnInit {
 				// ignore
 			} else {
 				const history = await this.wax.getTokenPriceHistory(token);
-				const tokenPriceOnDay = history.find(h => h.time.getTime() >= (bucket.date.getTime() - STEP))
+				const tokenPriceOnDay = history.find(h => h.time.getTime() >= (bucket.date.getTime() - STEP * 2))
 				if (tokenPriceOnDay) {
-					if (tokenPriceOnDay.price > 1000) {
-						console.log(tokenPriceOnDay)
-					}
 					const tokenWorth = tokenPriceOnDay.price * bucket.tokens[token];
 					worth += tokenWorth;
-
 					this.updateLastTokenValue(token, tokenWorth, bucket.tokens[token]);
 				} else {
-					console.log("No price found")
+					console.log("No price found for token ", token)
+					console.log(bucket.date);
+					console.log(history);
 				}
 			}
 
@@ -277,7 +281,7 @@ export class HistoryComponent implements OnInit {
 			entry = {name: token, value, amount}
 			this.lastTokenValues.push(entry);
 		} else {
-			entry.amount
+			entry.amount = amount;
 			entry.value = value;
 		}
 	}

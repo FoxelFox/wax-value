@@ -39,15 +39,33 @@ export class AlcorService {
 			const ask = trade.ask;
 
 			if (trade.type === "buymatch") {
-				line.buy_currency = base;
-				line.buy_amount = bid;
-				line.sell_currency = quote;
-				line.sell_amount = ask;
+				if (trade.bidder !== this.wax.account.account_name) {
+					line.buy_currency = base;
+					line.buy_amount = bid;
+					line.sell_currency = quote;
+					line.sell_amount = ask;
+				} else {
+					// this was market buy so bid and ask is flipped idk why maybe alcor bug ¯\_(ツ)_/¯
+					line.sell_currency = base;
+					line.sell_amount = bid;
+					line.buy_currency = quote;
+					line.buy_amount = ask;
+				}
+
 			} else {
-				line.buy_currency = quote;
-				line.buy_amount = bid;
-				line.sell_currency = base;
-				line.sell_amount = ask;
+				if (trade.bidder === this.wax.account.account_name) {
+					line.buy_currency = quote;
+					line.buy_amount = bid;
+					line.sell_currency = base;
+					line.sell_amount = ask;
+				} else {
+					// this was market sell so bid and ask is flipped idk why maybe alcor bug ¯\_(ツ)_/¯
+					line.sell_currency = quote;
+					line.sell_amount = bid;
+					line.buy_currency = base;
+					line.buy_amount = ask;
+				}
+
 			}
 
 			csv.push(line);
