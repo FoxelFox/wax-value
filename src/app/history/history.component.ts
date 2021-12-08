@@ -57,6 +57,9 @@ export class HistoryComponent implements OnInit {
 						pinch: {
 							enabled: true
 						},
+						drag: {
+							enabled: true
+						},
 						mode: "x"
 					}
 				}
