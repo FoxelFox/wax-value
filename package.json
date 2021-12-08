@@ -20,6 +20,7 @@
     "@angular/router": "~13.0.0",
     "chart.js": "^3.6.1",
     "chartjs-adapter-moment": "^1.0.0",
+    "chartjs-plugin-zoom": "^1.2.0",
     "csv-writer": "^1.6.0",
     "moment": "^2.29.1",
     "rxjs": "~7.4.0",

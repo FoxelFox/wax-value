@@ -3,10 +3,12 @@ import {HistoryService} from "./history.service";
 import {CsvStringifierFactory, ObjectCsvStringifierParams} from "../../../lib/csv-stringifier-factory";
 import {Chart, ChartConfiguration, ChartData, ChartItem, registerables} from "chart.js";
 import 'chartjs-adapter-moment';
+import zoomPlugin from "chartjs-plugin-zoom";
 import {CSVRecord} from "../interfaces";
 import {WaxService} from "../wax.service";
 
 Chart.register(...registerables);
+Chart.register(zoomPlugin);
 const csvStringifierFactory = new CsvStringifierFactory();
 const createObjectCsvStringifier = (params: ObjectCsvStringifierParams) =>
 	csvStringifierFactory.createObjectCsvStringifier(params);
@@ -46,6 +48,19 @@ export class HistoryComponent implements OnInit {
 		type: 'line',
 		data: this.data,
 		options: {
+			plugins: {
+				zoom: {
+					zoom: {
+						wheel: {
+							enabled: true
+						},
+						pinch: {
+							enabled: true
+						},
+						mode: "x"
+					}
+				}
+			},
 			maintainAspectRatio: false,
 			animation: {
 				duration: 0
