@@ -175,10 +175,10 @@ export class HistoryComponent implements OnInit {
 	out(bucket: Value, result: CSVRecord) {
 		bucket.tokens[result.sell_currency] = bucket.tokens[result.sell_currency] ? bucket.tokens[result.sell_currency] - result.sell_amount : result.sell_amount;
 		if (bucket.tokens[result.sell_currency] < 0) {
-			console.log(bucket)
-			console.log(this.valuePerDay)
-			console.log(this.history.history)
-			debugger;
+			// console.log(bucket)
+			// console.log(this.valuePerDay)
+			// console.log(this.history.history)
+			//debugger;
 		}
 	}
 
@@ -200,10 +200,8 @@ export class HistoryComponent implements OnInit {
 
 	download() {
 		// map WAX to WAXP
-		const full = this.history.history.concat(this.history.trades);
-		full.sort((a, b) => a.date.getTime() - b.date.getTime())
 		const copy = [];
-		for (const line of full) {
+		for (const line of this.history.history) {
 			copy.push({
 				type: line.type,
 				buy_amount: line.buy_amount,
@@ -274,9 +272,9 @@ export class HistoryComponent implements OnInit {
 					worth += tokenWorth;
 					this.updateLastTokenValue(token, tokenWorth, bucket.tokens[token]);
 				} else {
-					console.log("No price found for token ", token)
-					console.log(bucket.date);
-					console.log(history);
+					// console.log("No price found for token ", token)
+					// console.log(bucket.date);
+					// console.log(history);
 				}
 			}
 
