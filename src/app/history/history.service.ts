@@ -11,6 +11,7 @@ export class HistoryService {
 	actions: Transaction[] = [];
 
 	trades: CSVRecord[];
+	lastSwapSendTX: Transaction;
 	history: CSVRecord[] = [];
 	done = undefined;
 
@@ -138,6 +139,32 @@ export class HistoryService {
 			return ret;
 			// }
 		}
+
+		// Alcor Swap
+		if (act.name === "transfer" && act.data.to === "alcorammswap") {
+			this.lastSwapSendTX = transaction;
+		}
+		if (act.name === "transfer" && act.data.from === "alcorammswap") {
+
+			const buy = act.data.quantity.split(" ");
+			const sell = this.lastSwapSendTX.action_trace.act.data.quantity.split(" ");
+			ret.type = "Trade";
+			ret.buy_amount = parseFloat(buy[0]);
+			ret.buy_currency = buy[1] + "@" + act.account;
+			ret.sell_currency = sell[1] + "@" + this.lastSwapSendTX.action_trace.act.account;
+			ret.sell_amount = parseFloat(sell[0]);
+
+			return ret;
+		}
+
+		// Alcor Swap Pool
+		// deposit wax
+		// deoisit tlm
+		// to_buy taxtlm
+		// refund liquidity slippage wax
+		// refund liquidity slippage tlm
+
+
 		return undefined
 	}
 
