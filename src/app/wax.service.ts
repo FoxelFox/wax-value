@@ -8,10 +8,19 @@ export interface PricePoint {
 	price: number
 }
 
+export interface NFTInfo {
+	id: string
+	collection: string
+	schema: string
+	template: string
+}
+
 @Injectable()
 export class WaxService {
 
 	tokenPricesCache: { [key: string]: PricePoint[] } = {};
+	nftPricesCache: { [key: string]: PricePoint[] } = {};
+
 	account?: Account
 	markets?: Market[];
 	balances?: LightBalances[]
@@ -186,5 +195,37 @@ export class WaxService {
 		this.tokenPricesCache[token] = prices;
 
 		return prices;
+	}
+
+	async getNFTPriceHistory(nft: string): Promise<PricePoint[]> {
+		if (this.nftPricesCache[nft]) {
+			return this.nftPricesCache[nft];
+		}
+
+		const path = nft.split("@");
+		const sales = await lastValueFrom(this.http.get<{ data: NFTSale[] }>(
+			`atomicassets/prices/sales/days?collection_name=${path[1]}&schema_name=${path[2]}&symbol=WAX&template_id=${path[3]}`
+		));
+
+		const prices = [];
+		for (const sale of sales.data) {
+			prices.push({
+				time: new Date(sale.time),
+				price: parseInt(sale.median) / Math.pow(10, 8)
+			})
+		}
+		this.nftPricesCache[nft] = prices;
+		return prices;
+	}
+
+	async getNFTInfo(id: string): Promise<NFTInfo> {
+		const res = await lastValueFrom(this.http.get<any>(`https://wax.api.aa.atomichub.io/atomicmarket/v1/assets/${id}`))
+
+		return {
+			id,
+			collection: res.data.collection.collection_name,
+			schema: res.data.schema.schema_name,
+			template: res.data.template.template_id
+		}
 	}
 }

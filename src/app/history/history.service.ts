@@ -13,6 +13,11 @@ export class HistoryService {
 
 	trades: CSVRecord[];
 	lastSwapSendTX: Transaction;
+	lastAtomicMarketTX: {
+		id: string
+		deposit: number
+		nfts: string[]
+	}
 	lastSwapPoolTX: {
 		id: string
 		depositA: {
@@ -71,27 +76,26 @@ export class HistoryService {
 				}
 				this.transactions.push(t);
 
-				const result = this.getTransactionResult(t);
+				const results = await this.getTransactionResult(t);
 
-				if (result) {
-					let change = 0;
-					if (result.buy_amount) {
-						change += result.buy_amount
-					} else if (result.sell_amount) {
-						change -= result.sell_amount
-					} else {
-						console.log(`No Result with no change at ${t.account_action_seq}`)
+				if (results) {
+					for (const result of results) {
+						let change = 0;
+						if (result.buy_amount) {
+							change += result.buy_amount
+						} else if (result.sell_amount) {
+							change -= result.sell_amount
+						} else {
+							console.log(`No Result with no change at ${t.account_action_seq}`)
+						}
+						txMap[t.action_trace.trx_id] = true;
+						sum += change;
+
+						// Duplicate check
+						if (JSON.stringify(block[block.length - 1] || this.history[this.history.length - 1]) !== JSON.stringify(result)) {
+							block.push(result);
+						}
 					}
-					txMap[t.action_trace.trx_id] = true;
-					sum += change;
-
-					// Duplicate check
-					if (JSON.stringify(block[block.length - 1] || this.history[this.history.length - 1]) !== JSON.stringify(result)) {
-						block.push(result);
-					}
-
-
-					//}
 				}
 			}
 
@@ -119,7 +123,7 @@ export class HistoryService {
 		this.done = true;
 	}
 
-	getTransactionResult(transaction: Transaction): CSVRecord {
+	async getTransactionResult(transaction: Transaction): Promise<CSVRecord[]> {
 		const act = transaction.action_trace.act;
 		let ret: CSVRecord = {
 			date: new Date(transaction.block_time),
@@ -134,7 +138,7 @@ export class HistoryService {
 			result += parseFloat(act.data.stake_net_quantity.split(" ")[0])
 			ret.buy_amount = result;
 			ret.buy_currency = "WAX";
-			return ret;
+			return [ret];
 		}
 
 		// Just Staking
@@ -148,6 +152,8 @@ export class HistoryService {
 			&& act.data.to !== "eosio.stake" // just staking
 			&& act.data.to !== "alcordexmain" // ignore order movements because they handled by AlcorExchange class
 			&& act.data.from !== "alcordexmain" // ignore order movements  because they handled by AlcorExchange class
+			&& act.data.to !== "atomicmarket" // handled by NFT
+			&& act.data.from !== "atomicmarket" // handled by NFT
 		) {
 			const quantity = act.data.quantity.split(" ");
 			// if (quantity[1] === "WAX") {
@@ -162,7 +168,7 @@ export class HistoryService {
 				ret.sell_amount = parseFloat(quantity[0]);
 				ret.sell_currency = quantity[1] + "@" + act.account
 			}
-			return ret;
+			return [ret];
 			// }
 		}
 
@@ -180,17 +186,53 @@ export class HistoryService {
 			ret.sell_currency = sell[1] + "@" + this.lastSwapSendTX.action_trace.act.account;
 			ret.sell_amount = parseFloat(sell[0]);
 
-			return ret;
+			return [ret];
 		}
 
-		// Alcor Swap Pool
-
+		//TODO Alcor Swap Pool
 		// deposit wax
 		// deoisit tlm
 		// to_buy taxtlm
 		// refund liquidity slippage wax
 		// refund liquidity slippage tlm
 
+
+		// Mint NFT
+		if (act.name === "logmint") {
+			ret.type = "Minting"
+			ret.buy_amount = 1
+			ret.buy_currency = `NFT@${act.data.collection_name}@${act.data.schema_name}@${act.data.template_id}`
+			return [ret];
+		}
+
+		// NFT Atomic Market BUY
+		if (act.data.to === "atomicmarket" && act.data.memo === "deposit") {
+			this.lastAtomicMarketTX = {
+				deposit: parseFloat(act.data.quantity.split(" ")),
+				id: transaction.action_trace.trx_id,
+				nfts: []
+			}
+		}
+		if (act.data.from === "atomicmarket" && act.data.asset_ids) {
+			this.lastAtomicMarketTX.nfts = act.data.asset_ids
+
+			const rets: CSVRecord[] = []
+			for (const nft of this.lastAtomicMarketTX.nfts) {
+				const info = await this.wax.getNFTInfo(nft);
+
+				rets.push({
+					date: new Date(transaction.block_time),
+					exchange: "WAX Transaction",
+					type: "Trade",
+					buy_currency: `NFT@${info.collection}@${info.schema}@${info.template}`,
+					buy_amount: 1,
+					sell_currency: "WAX@eosio.token",
+					sell_amount: this.lastAtomicMarketTX.deposit / this.lastAtomicMarketTX.nfts.length
+				})
+			}
+
+			return rets;
+		}
 
 		return undefined
 	}

@@ -228,7 +228,7 @@ export interface AlcorTrade {
 }
 
 export interface CSVRecord {
-	type: "Einnahme" | "Ausgabe" | "Einzahlung" | "Auszahlung" | "Zinsen" | "Trade"
+	type: "Einnahme" | "Ausgabe" | "Einzahlung" | "Auszahlung" | "Zinsen" | "Trade" | "Minting"
 	buy_amount?: number
 	buy_currency?: string
 	sell_amount?: number

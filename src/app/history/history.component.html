@@ -26,6 +26,14 @@
 		</div>
 	</ng-container>
 
+	<ng-container *ngFor="let nft of lastNFTValues" [style.order]="nft.value * 1000">
+		<div *ngIf="nft.amount > 0.001" class="tokens">
+			<div>{{nft.name}}</div>
+			<div style="text-align: right">{{nft.amount.toFixed(3)}}</div>
+			<div style="text-align: right">{{nft.value.toFixed(3) + ' WAX'}}</div>
+		</div>
+	</ng-container>
+
 	<button (click)="downloadCSV()" [disabled]="!history.done" mat-button>
 		<mat-icon>download</mat-icon>
 		CoinTracking

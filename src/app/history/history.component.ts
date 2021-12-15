@@ -15,6 +15,7 @@ const createObjectCsvStringifier = (params: ObjectCsvStringifierParams) =>
 
 interface Value {
 	tokens: { [key: string]: number }
+	nfts: { [key: string]: number }
 	date: Date
 	worth: {
 		wax: number
@@ -95,6 +96,12 @@ export class HistoryComponent implements OnInit {
 		amount: number
 	}[] = [];
 
+	lastNFTValues: {
+		name: string
+		value: number
+		amount: number
+	}[] = [];
+
 	constructor(
 		public history: HistoryService,
 		public wax: WaxService
@@ -136,6 +143,7 @@ export class HistoryComponent implements OnInit {
 					} else {
 						this.valuePerDay[newDay] = {
 							tokens: {},
+							nfts: {},
 							date: undefined,
 							worth: {
 								wax: 0,
@@ -152,6 +160,7 @@ export class HistoryComponent implements OnInit {
 				switch (result.type) {
 					case "Einnahme":
 					case "Einzahlung":
+					case "Minting":
 						this.in(bucket, result);
 						break;
 					case "Ausgabe":
@@ -169,16 +178,20 @@ export class HistoryComponent implements OnInit {
 	}
 
 	in(bucket: Value, result: CSVRecord) {
-		bucket.tokens[result.buy_currency] = bucket.tokens[result.buy_currency] ? bucket.tokens[result.buy_currency] + result.buy_amount : result.buy_amount;
+
+
+		if (result.buy_currency.split("@")[0] === "NFT") {
+			bucket.nfts[result.buy_currency] = bucket.nfts[result.buy_currency] ? bucket.nfts[result.buy_currency] + result.buy_amount : result.buy_amount;
+		} else {
+			bucket.tokens[result.buy_currency] = bucket.tokens[result.buy_currency] ? bucket.tokens[result.buy_currency] + result.buy_amount : result.buy_amount;
+		}
 	}
 
 	out(bucket: Value, result: CSVRecord) {
-		bucket.tokens[result.sell_currency] = bucket.tokens[result.sell_currency] ? bucket.tokens[result.sell_currency] - result.sell_amount : result.sell_amount;
-		if (bucket.tokens[result.sell_currency] < 0) {
-			// console.log(bucket)
-			// console.log(this.valuePerDay)
-			// console.log(this.history.history)
-			//debugger;
+		if (result.sell_currency.split("@")[0] === "NFT") {
+			bucket.nfts[result.sell_currency] = bucket.nfts[result.sell_currency] ? bucket.nfts[result.sell_currency] - result.sell_amount : result.sell_amount;
+		} else {
+			bucket.tokens[result.sell_currency] = bucket.tokens[result.sell_currency] ? bucket.tokens[result.sell_currency] - result.sell_amount : result.sell_amount;
 		}
 	}
 
@@ -273,6 +286,8 @@ export class HistoryComponent implements OnInit {
 		}
 
 		let worth = 0;
+
+		// Tokens
 		for (const token in bucket.tokens) {
 			if (token === "WAX@eosio.token") {
 				worth += bucket.tokens[token]
@@ -286,19 +301,26 @@ export class HistoryComponent implements OnInit {
 					const tokenWorth = tokenPriceOnDay.price * bucket.tokens[token];
 					worth += tokenWorth;
 					this.updateLastTokenValue(token, tokenWorth, bucket.tokens[token]);
-				} else {
-					// console.log("No price found for token ", token)
-					// console.log(bucket.date);
-					// console.log(history);
 				}
 			}
-
-
 		}
+
+		// NFTs
+		for (const nft in bucket.nfts) {
+			const history = await this.wax.getNFTPriceHistory(nft);
+			const nftPriceOnDay = history.find(h => h.time.getTime() >= (bucket.date.getTime() - STEP * 2))
+			if (nftPriceOnDay) {
+				const nftWorth = nftPriceOnDay.price * bucket.nfts[nft];
+				worth += nftWorth;
+				this.updateLastNFTValue(nft, nftWorth, bucket.nfts[nft]);
+			}
+		}
+
 		bucket.worth.wax = worth
 		// TODO USD Price
 
 		this.lastTokenValues.sort((a, b) => b.value - a.value);
+		this.lastNFTValues.sort((a, b) => b.value - a.value);
 
 		this.chart.data.datasets[0].data.push({
 			x: bucket.date.getTime(),
@@ -312,6 +334,17 @@ export class HistoryComponent implements OnInit {
 		if (!entry) {
 			entry = {name: token, value, amount}
 			this.lastTokenValues.push(entry);
+		} else {
+			entry.amount = amount;
+			entry.value = value;
+		}
+	}
+
+	updateLastNFTValue(nft: string, value: number, amount: number) {
+		let entry = this.lastNFTValues.find(n => n.name == nft);
+		if (!entry) {
+			entry = {name: nft, value, amount}
+			this.lastNFTValues.push(entry);
 		} else {
 			entry.amount = amount;
 			entry.value = value;
