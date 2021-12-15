@@ -202,6 +202,9 @@ export class WaxService {
 			return this.nftPricesCache[nft];
 		}
 
+		// rate limit
+		await new Promise(resolve => setTimeout(resolve, 1000));
+
 		const path = nft.split("@");
 		const sales = await lastValueFrom(this.http.get<{ data: NFTSale[] }>(
 			`atomicassets/prices/sales/days?collection_name=${path[1]}&schema_name=${path[2]}&symbol=WAX&template_id=${path[3]}`
