@@ -219,7 +219,7 @@ export class WaxService {
 	}
 
 	async getNFTInfo(id: string): Promise<NFTInfo> {
-		const res = await lastValueFrom(this.http.get<any>(`https://wax.api.aa.atomichub.io/atomicmarket/v1/assets/${id}`))
+		const res = await lastValueFrom(this.http.get<any>(`atomicassets/assets/${id}`))
 
 		return {
 			id,

@@ -9,7 +9,6 @@
 		}
 	},
 	"/light": {
-
 		"target": "https://lightapi.eosamsterdam.net/api",
 		"secure": true,
 		"changeOrigin": true,
@@ -24,7 +23,6 @@
 		"pathRewrite": {
 			"^/atomicassets": ""
 		}
-
 	},
 	"/alcor": {
 		"target": "https://wax.alcor.exchange/api",
@@ -33,7 +31,5 @@
 		"pathRewrite": {
 			"^/alcor": ""
 		}
-
 	}
-
 }
