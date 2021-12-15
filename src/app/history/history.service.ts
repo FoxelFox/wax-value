@@ -4,6 +4,7 @@ import {WaxService} from "../wax.service";
 import {lastValueFrom} from "rxjs";
 import {CSVRecord, Transaction} from "../interfaces";
 import {AlcorService} from "../alcor-trades.service";
+import {HexService} from "../hex.service";
 
 @Injectable()
 export class HistoryService {
@@ -12,13 +13,30 @@ export class HistoryService {
 
 	trades: CSVRecord[];
 	lastSwapSendTX: Transaction;
+	lastSwapPoolTX: {
+		id: string
+		depositA: {
+			token: string
+			amount: string
+		}
+		depositB: {
+			token: string
+			amount: string
+		},
+		pool: {
+			token: string
+			amount: string
+		}
+	};
 	history: CSVRecord[] = [];
+	transactions: Transaction[] = [];
 	done = undefined;
 
 	constructor(
 		private http: HttpClient,
 		public wax: WaxService,
-		public alcor: AlcorService
+		public alcor: AlcorService,
+		public hex: HexService
 	) {
 
 	}
@@ -42,11 +60,16 @@ export class HistoryService {
 		while (transactions = (await iterator.next()).value) {
 			let block: CSVRecord[] = [];
 			for (const t of transactions) {
-				if (txMap[t.action_trace.trx_id]) {
-					duplicates++;
-					continue; // duplicate tx
-				}
+				// if (txMap[t.action_trace.trx_id]) {
+				// 	duplicates++;
+				// 	continue; // duplicate tx
+				// }
 
+				if (!t.action_trace.act.data) {
+					// some act providing data only in hex_data that have to be decoded
+					await this.hex.decode(t.action_trace.act);
+				}
+				this.transactions.push(t);
 
 				const result = this.getTransactionResult(t);
 
@@ -62,9 +85,12 @@ export class HistoryService {
 					txMap[t.action_trace.trx_id] = true;
 					sum += change;
 
-					// if (change > 20 || change < -20) {
-					// 	result['debug'] = t.account_action_seq
-					block.push(result);
+					// Duplicate check
+					if (JSON.stringify(block[block.length - 1] || this.history[this.history.length - 1]) !== JSON.stringify(result)) {
+						block.push(result);
+					}
+
+
 					//}
 				}
 			}
@@ -158,6 +184,7 @@ export class HistoryService {
 		}
 
 		// Alcor Swap Pool
+
 		// deposit wax
 		// deoisit tlm
 		// to_buy taxtlm

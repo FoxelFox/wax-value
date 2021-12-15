@@ -13,6 +13,7 @@ import {WaxService} from "./wax.service";
 import {HttpClientModule} from "@angular/common/http";
 import {MatToolbarModule} from "@angular/material/toolbar";
 import {AlcorService} from "./alcor-trades.service";
+import {HexService} from "./hex.service";
 
 @NgModule({
 	declarations: [
@@ -33,9 +34,17 @@ import {AlcorService} from "./alcor-trades.service";
 	],
 	providers: [
 		WaxService,
-		AlcorService
+		AlcorService,
+		HexService
 	],
 	bootstrap: [AppComponent]
 })
 export class AppModule {
+
+	constructor(public hex: HexService) {
+		// test
+		hex.decode(undefined).then()
+
+	}
+
 }

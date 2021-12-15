@@ -198,7 +198,22 @@ export class HistoryComponent implements OnInit {
 		}
 	}
 
-	download() {
+	downloadJSON() {
+		const data = JSON.stringify(this.history.transactions, undefined, "\t");
+
+		let element = document.createElement('a');
+		element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(data));
+		element.setAttribute('download', "output.json");
+
+		element.style.display = 'none';
+		document.body.appendChild(element);
+
+		element.click();
+
+		document.body.removeChild(element);
+	}
+
+	downloadCSV() {
 		// map WAX to WAXP
 		const copy = [];
 		for (const line of this.history.history) {

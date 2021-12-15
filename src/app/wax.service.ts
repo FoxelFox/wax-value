@@ -103,7 +103,7 @@ export class WaxService {
 		});
 
 		// NFTs
-		this.loadNFTs().then();
+		//this.loadNFTs().then();
 
 	}
 

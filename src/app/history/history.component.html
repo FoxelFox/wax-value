@@ -26,9 +26,14 @@
 		</div>
 	</ng-container>
 
-	<button (click)="download()" [disabled]="!history.done" mat-button>
+	<button (click)="downloadCSV()" [disabled]="!history.done" mat-button>
 		<mat-icon>download</mat-icon>
-		CSV
+		CoinTracking
+	</button>
+
+	<button (click)="downloadJSON()" [disabled]="!history.done" mat-button>
+		<mat-icon>download</mat-icon>
+		Blockchain
 	</button>
 </div>
 
