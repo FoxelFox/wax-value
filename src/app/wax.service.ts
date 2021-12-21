@@ -203,7 +203,7 @@ export class WaxService {
 		}
 
 		// rate limit
-		await new Promise(resolve => setTimeout(resolve, 1000));
+		await new Promise(resolve => setTimeout(resolve, 1500));
 
 		const path = nft.split("@");
 		const sales = await lastValueFrom(this.http.get<{ data: NFTSale[] }>(
