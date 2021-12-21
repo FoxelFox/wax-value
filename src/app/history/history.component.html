@@ -4,12 +4,20 @@
 ></mat-progress-bar>
 
 <div style="margin: 0 8px; height:60vh; width: calc(100vw - 16px)">
-	<h1
-		*ngIf="history.history.length"
-	>
-		{{history.actions.length}} Transactions fetched until
-		{{formatDate(history.history[history.history.length - 1].date)}}
-	</h1>
+	<div fxLayout="row" fxLayoutAlign="space-between center">
+		<h1
+			*ngIf="history.history.length"
+		>
+			{{history.actions.length}} Transactions fetched until
+			{{formatDate(history.history[history.history.length - 1].date)}}
+		</h1>
+		<h1
+			*ngIf="history.history.length"
+		>
+			{{lastSUM.toFixed(3) + ' WAX'}}
+		</h1>
+	</div>
+
 	<canvas id="performance"></canvas>
 
 

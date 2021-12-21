@@ -109,6 +109,17 @@ export class HistoryComponent implements OnInit {
 
 	}
 
+	get lastSUM() {
+		let sum = 0;
+		for (const nft of this.lastNFTValues) {
+			sum += nft.value;
+		}
+		for (const token of this.lastTokenValues) {
+			sum += token.value;
+		}
+		return sum;
+	}
+
 	async ngOnInit() {
 		this.chart = new Chart(
 			document.getElementById('performance') as ChartItem,
