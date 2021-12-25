@@ -187,7 +187,7 @@ export class WaxService {
 			for (const point of res) {
 				prices.push({
 					time: new Date(point.time),
-					price: (point.open + point.close) / 2
+					price: (point.low + point.close) / 2
 				})
 			}
 		}
