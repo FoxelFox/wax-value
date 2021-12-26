@@ -212,13 +212,16 @@ export class HistoryComponent implements OnInit {
 	 * @param token
 	 */
 	convertCurrency(token: string) {
+		if (!token) {
+			return undefined;
+		}
 		switch (token) {
 			case "WAX@eosio.token":
 				return "WAXP";
 			case "TLM@alien.worlds":
 				return "TLM";
 			default:
-				return token
+				return token.replace(/@/g, "_")
 		}
 	}
 
