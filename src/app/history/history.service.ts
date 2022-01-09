@@ -11,7 +11,7 @@ import * as localforage from "localforage";
 export class HistoryService {
 
 	actions: Transaction[] = [];
-	NFTSaleMap: { [key: number]: string[] }
+	NFTSaleMap: { [key: number]: string[] } = {}
 	lastNFTSaleTX: Transaction;
 
 	trades: CSVRecord[];
@@ -238,7 +238,7 @@ export class HistoryService {
 		}
 
 		// NFT was put on sale
-		if (act.data.to === "atomicassets" && act.data.memo === "sale") {
+		if (act.account === "atomicassets" && act.data.memo === "sale" && act.data.offer_id) {
 			const nfts = [];
 			for (const nft of act.data.sender_asset_ids) {
 				const info = await this.wax.getNFTInfo(nft);
@@ -248,12 +248,25 @@ export class HistoryService {
 		}
 
 		// NFT sale offer was accepted
-
 		if (act.data.from === "atomicmarket" && act.data.memo.indexOf("AtomicMarket Sale Payout") !== -1) {
 			this.lastNFTSaleTX = transaction
 		}
-		if (act.data.to === "atomicassets" && act.data.memo === "acceptoffer") {
-
+		if (act.account === "atomicassets" && act.name === "acceptoffer") {
+			const nfts = this.NFTSaleMap[act.data.offer_id];
+			const price = parseFloat(this.lastNFTSaleTX.action_trace.act.data.quantity.split(" "));
+			const rets: CSVRecord[] = []
+			for (const nft of nfts) {
+				rets.push({
+					date: new Date(transaction.block_time),
+					exchange: "WAX Transaction",
+					type: "Trade",
+					buy_currency: "WAX@eosio.token",
+					buy_amount: price / nfts.length,
+					sell_currency: nft,
+					sell_amount: 1
+				})
+			}
+			return rets;
 		}
 
 		return undefined
