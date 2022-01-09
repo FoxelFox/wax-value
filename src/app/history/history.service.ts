@@ -144,8 +144,8 @@ export class HistoryService {
 			return [ret];
 		}
 
-		// Just Staking
-		if (act.name === "delegatebw" && act.data.from === this.wax.account.account_name) {
+		// Just Staking / unstaking
+		if (act.name === "delegatebw" || act.name === "undelegatebw" || act.data.from === "eosio.stake") {
 			return undefined
 		}
 
