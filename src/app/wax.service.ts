@@ -4,6 +4,8 @@ import {lastValueFrom} from "rxjs";
 import {Account, LightAccount, LightBalances, Market, NFT, NFTSale, Order} from "./interfaces";
 import * as localforage from "localforage";
 
+const DAY = 1000 * 60 * 60 * 24;
+
 export interface PricePoint {
 	time: Date
 	price: number
@@ -20,7 +22,7 @@ export interface NFTInfo {
 export class WaxService {
 
 	tokenPricesCache: { [key: string]: PricePoint[] } = {};
-	nftPricesCache: { [key: string]: PricePoint[] } = {};
+	nftPricesCache: { [key: string]: PricePoint[] };
 	nftInfoCache: { [key: string]: NFTInfo };
 
 	account?: Account
@@ -123,7 +125,6 @@ export class WaxService {
 
 		this.nfts = res.data
 		for (const nft of this.nfts) {
-
 			await new Promise(resolve => setTimeout(resolve, 1000));
 
 			const sales = await lastValueFrom(this.http.get<{ data: NFTSale[] }>(
@@ -200,6 +201,22 @@ export class WaxService {
 	}
 
 	async getNFTPriceHistory(nft: string): Promise<PricePoint[]> {
+
+		if (!this.nftPricesCache) {
+			const lastDate: number = await localforage.getItem("nftPricesCacheDate")
+			if (lastDate) {
+				const date = new Date(lastDate)
+				if (date.getTime() > Date.now() - DAY) {
+					this.nftPricesCache = await localforage.getItem("nftPricesCache");
+				} else {
+					// cache is to old
+					this.nftPricesCache = {};
+				}
+			} else {
+				this.nftPricesCache = {};
+			}
+		}
+
 		if (this.nftPricesCache[nft]) {
 			return this.nftPricesCache[nft];
 		}
@@ -220,6 +237,9 @@ export class WaxService {
 			})
 		}
 		this.nftPricesCache[nft] = prices;
+		await localforage.setItem("nftPricesCache", this.nftPricesCache);
+		await localforage.setItem("nftPricesCacheDate", Date.now())
+
 		return prices;
 	}
 

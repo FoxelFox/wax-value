@@ -5,6 +5,7 @@ import {lastValueFrom} from "rxjs";
 import {CSVRecord, Transaction} from "../interfaces";
 import {AlcorService} from "../alcor-trades.service";
 import {HexService} from "../hex.service";
+import * as localforage from "localforage";
 
 @Injectable()
 export class HistoryService {
@@ -258,20 +259,35 @@ export class HistoryService {
 		return undefined
 	}
 
-	async* getTransactions()
-		:
-		AsyncGenerator<Transaction[]> {
+	async* getTransactions(): AsyncGenerator<Transaction[]> {
+
+		let cache = await localforage.getItem(this.wax.account.account_name + '-actions');
+		if (!cache) {
+			cache = {};
+		}
+
 		let i = 0;
 		while (true
 			) {
 			try {
-				const res = await lastValueFrom(this.http.post<{ actions: Transaction[] }>(`api/history/get_actions`, {
-					account_name: this.wax.account.account_name,
-					offset: 100,
-					pos: i * 100
-				}));
-				this.actions = this.actions.concat(res.actions);
-				yield res.actions;
+				if (cache[i * 100]) {
+					this.actions = this.actions.concat(cache[i * 100]);
+					yield cache[i * 100];
+				} else {
+					const res = await lastValueFrom(this.http.post<{ actions: Transaction[] }>(`api/history/get_actions`, {
+						account_name: this.wax.account.account_name,
+						offset: 100,
+						pos: i * 100
+					}));
+					this.actions = this.actions.concat(res.actions);
+					if (res.actions.length === 100) {
+						// only store full pages
+						cache[i * 100] = res.actions;
+						await localforage.setItem(this.wax.account.account_name + '-actions', cache);
+					}
+
+					yield res.actions;
+				}
 				i++
 			} catch (e) {
 				break;
