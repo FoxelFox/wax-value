@@ -2,6 +2,7 @@ import {HttpClient} from "@angular/common/http";
 import {Injectable} from "@angular/core";
 import {lastValueFrom} from "rxjs";
 import {Account, LightAccount, LightBalances, Market, NFT, NFTSale, Order} from "./interfaces";
+import * as localforage from "localforage";
 
 export interface PricePoint {
 	time: Date
@@ -20,6 +21,7 @@ export class WaxService {
 
 	tokenPricesCache: { [key: string]: PricePoint[] } = {};
 	nftPricesCache: { [key: string]: PricePoint[] } = {};
+	nftInfoCache: { [key: string]: NFTInfo };
 
 	account?: Account
 	markets?: Market[];
@@ -223,16 +225,32 @@ export class WaxService {
 
 	async getNFTInfo(id: string): Promise<NFTInfo> {
 
+		if (!this.nftInfoCache) {
+			this.nftInfoCache = await localforage.getItem("nftInfoCache");
+			if (!this.nftInfoCache) {
+				this.nftInfoCache = {};
+			}
+		}
+
+		if (this.nftInfoCache[id]) {
+			return this.nftInfoCache[id];
+		}
+
 		// rate limit
 		await new Promise(resolve => setTimeout(resolve, 1000));
 
 		const res = await lastValueFrom(this.http.get<any>(`atomicassets/assets/${id}`))
 
-		return {
+		const info = {
 			id,
 			collection: res.data.collection.collection_name,
 			schema: res.data.schema.schema_name,
 			template: res.data.template.template_id
-		}
+		};
+
+		this.nftInfoCache[id] = info;
+		await localforage.setItem("nftInfoCache", this.nftInfoCache);
+
+		return info;
 	}
 }

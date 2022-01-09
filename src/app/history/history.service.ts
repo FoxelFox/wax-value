@@ -10,6 +10,8 @@ import {HexService} from "../hex.service";
 export class HistoryService {
 
 	actions: Transaction[] = [];
+	NFTSaleMap: { [key: number]: string[] }
+	lastNFTSaleTX: Transaction;
 
 	trades: CSVRecord[];
 	lastSwapSendTX: Transaction;
@@ -234,12 +236,34 @@ export class HistoryService {
 			return rets;
 		}
 
+		// NFT was put on sale
+		if (act.data.to === "atomicassets" && act.data.memo === "sale") {
+			const nfts = [];
+			for (const nft of act.data.sender_asset_ids) {
+				const info = await this.wax.getNFTInfo(nft);
+				nfts.push(`NFT@${info.collection}@${info.schema}@${info.template}`);
+			}
+			this.NFTSaleMap[act.data.offer_id] = nfts;
+		}
+
+		// NFT sale offer was accepted
+
+		if (act.data.from === "atomicmarket" && act.data.memo.indexOf("AtomicMarket Sale Payout") !== -1) {
+			this.lastNFTSaleTX = transaction
+		}
+		if (act.data.to === "atomicassets" && act.data.memo === "acceptoffer") {
+
+		}
+
 		return undefined
 	}
 
-	async* getTransactions(): AsyncGenerator<Transaction[]> {
+	async* getTransactions()
+		:
+		AsyncGenerator<Transaction[]> {
 		let i = 0;
-		while (true) {
+		while (true
+			) {
 			try {
 				const res = await lastValueFrom(this.http.post<{ actions: Transaction[] }>(`api/history/get_actions`, {
 					account_name: this.wax.account.account_name,
