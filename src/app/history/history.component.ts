@@ -102,6 +102,12 @@ export class HistoryComponent implements OnInit {
 		amount: number
 	}[] = [];
 
+	lastValues: {
+		name: string
+		value: number
+		amount: number
+	}[] = [];
+
 	constructor(
 		public history: HistoryService,
 		public wax: WaxService
@@ -332,9 +338,7 @@ export class HistoryComponent implements OnInit {
 
 		bucket.worth.wax = worth
 		// TODO USD Price
-
-		this.lastTokenValues.sort((a, b) => b.value - a.value);
-		this.lastNFTValues.sort((a, b) => b.value - a.value);
+		this.lastValues = this.lastTokenValues.concat(this.lastNFTValues).sort((a, b) => b.value - a.value)
 
 		this.chart.data.datasets[0].data.push({
 			x: bucket.date.getTime(),

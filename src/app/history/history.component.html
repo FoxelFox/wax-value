@@ -3,7 +3,7 @@
 	style="margin-bottom: 8px; opacity: {{history.done ? 0: 1}}"
 ></mat-progress-bar>
 
-<div style="margin: 0 8px; height:60vh; width: calc(100vw - 16px)">
+<div style="margin: 0 16px; height:60vh; width: calc(100vw - 32px)">
 	<div fxLayout="row" fxLayoutAlign="space-between center">
 		<h1
 			*ngIf="history.history.length"
@@ -26,19 +26,11 @@
 		<div style="text-align: right">Amount</div>
 		<div style="text-align: right">Value</div>
 	</div>
-	<ng-container *ngFor="let token of lastTokenValues" [style.order]="token.value * 1000">
-		<div *ngIf="token.amount > 0.001" class="tokens">
+	<ng-container *ngFor="let token of lastValues">
+		<div *ngIf="token.amount > 0.001" [style.order]="token.value * 1000" class="tokens">
 			<div>{{token.name}}</div>
 			<div style="text-align: right">{{token.amount.toFixed(3)}}</div>
 			<div style="text-align: right">{{token.value.toFixed(3) + ' WAX'}}</div>
-		</div>
-	</ng-container>
-
-	<ng-container *ngFor="let nft of lastNFTValues" [style.order]="nft.value * 1000">
-		<div *ngIf="nft.amount > 0.001" class="tokens">
-			<div>{{nft.name}}</div>
-			<div style="text-align: right">{{nft.amount.toFixed(3)}}</div>
-			<div style="text-align: right">{{nft.value.toFixed(3) + ' WAX'}}</div>
 		</div>
 	</ng-container>
 
